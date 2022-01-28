@@ -6,7 +6,6 @@ use std::{
     path::{Path, PathBuf},
     time::{Duration, Instant},
 };
-#[cfg(test)]
 use tempfile::tempdir;
 
 #[derive(Debug)]
@@ -73,12 +72,16 @@ impl Db {
 }
 
 fn main() -> Result<()> {
-    let mut db = Db::new("logfile")?;
-
-    db.set("foo", "a")?;
-    db.set("bar", "b")?;
-    db.set("baz", "c")?;
-    db.delete("bar")?;
+    let dir = tempdir()?;
+    let file = dir.path().to_path_buf().join("logfile");
+    let mut db = Db::new(&file)?;
+    let t = Instant::now();
+    let mut writes = 0;
+    while Instant::now().duration_since(t) < Duration::from_millis(10000) {
+        writes += 1;
+        db.set("foo", "bar").unwrap();
+    }
+    println!("performed {} writes in 10 seconds", writes);
 
     Ok(())
 }

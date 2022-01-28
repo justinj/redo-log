@@ -42,14 +42,14 @@ impl Db {
     }
 }
 
-// `Drop` describes what happens when a value goes out of scope.
-impl Drop for Db {
-    fn drop(&mut self) {
-        self.flush().unwrap()
-    }
-}
-
 fn main() -> Result<()> {
+    let mut db = Db::new("db_data")?;
+    println!("value of abc is {:?}", db.get("abc"));
+    db.set("abc", "def");
+    println!("value of abc is {:?}", db.get("abc"));
+    panic!("");
+
+    db.flush()?;
     Ok(())
 }
 
@@ -80,7 +80,7 @@ fn test_recover() -> Result<()> {
     db.delete("foo");
     assert_eq!(db.get("foo"), None);
 
-    drop(db);
+    db.flush();
 
     let db = Db::new(&file)?;
     assert_eq!(db.get("baz"), Some(&"goo".into()));

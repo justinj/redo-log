@@ -9,8 +9,6 @@ use std::{
 #[cfg(test)]
 use tempfile::tempdir;
 
-mod panic_kernel;
-
 #[derive(Debug)]
 struct Db {
     log: File,
@@ -75,7 +73,6 @@ impl Db {
 }
 
 fn main() -> Result<()> {
-    panic_kernel::panic_kernel();
     let mut db = Db::new("logfile")?;
 
     db.set("foo", "a")?;
